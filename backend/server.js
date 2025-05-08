@@ -12,9 +12,25 @@ const app = express();
 // Connect to database
 connectDB();
 
+// CORS configuration
+const corsOptions = {
+  origin: process.env.ALLOWED_ORIGINS ? process.env.ALLOWED_ORIGINS.split(',') : [
+    'http://localhost:3000',
+    'https://roomify-tau.vercel.app',
+    'https://roomify.vercel.app',
+    'https://tfsa-calculator.vercel.app',
+    'https://roomify-git-main-thecalinn.vercel.app',
+    'https://roomify-thecalinn.vercel.app',
+    'https://roomify-m.vercel.app' // Your actual Vercel app URL
+  ],
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+};
+
 // Middleware
 app.use(express.json());
-app.use(cors());
+app.use(cors(corsOptions));
 
 // Routes
 app.use('/api/auth', require('./routes/authRoutes'));

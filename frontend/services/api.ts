@@ -1,4 +1,4 @@
-// API base URL remember to readjust once hosted
+// API base URL - adjust this to your backend URL
 export const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://roomify-backend-w6i9.onrender.com';
 
 // Type definitions
