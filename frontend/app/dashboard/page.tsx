@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
 import Footer from '@/components/Footer';
 import { User, Transaction, TFSAAPI, AuthAPI, TFSAData, removeToken, getToken } from '@/services/api';
@@ -45,7 +45,8 @@ const DEMO_DATA: TFSAData = {
   ]
 };
 
-export default function Dashboard() {
+// Create a DashboardContent component that uses useSearchParams
+function DashboardContent() {
   const [user, setUser] = useState<User | null>(null);
   const [tfsaData, setTfsaData] = useState<TFSAData | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -105,7 +106,7 @@ export default function Dashboard() {
     };
     
     fetchData();
-  }, [router, searchParams]);
+  }, [router, searchParams, isDemoMode]);
   
   const handleLogout = () => {
     if (isDemoMode) {
@@ -142,7 +143,8 @@ export default function Dashboard() {
           if (!prev) return prev;
           
           const updatedData = { ...prev };
-
+          // Total contribution room NEVER changes
+          // contributionRoom stays the same: updatedData.contributionRoom remains unchanged
           
           if (transactionType === 'Deposit') {
             updatedData.totalDeposits += newAmount;
@@ -186,7 +188,6 @@ export default function Dashboard() {
     return new Intl.NumberFormat('en-CA', { style: 'currency', currency: 'CAD' }).format(amount);
   };
 
-
   // Add a function to delete transactions
   const deleteTransaction = async (transactionId: string) => {
     if (isDemoMode) {
@@ -219,7 +220,7 @@ export default function Dashboard() {
       return;
     }
     
-    
+    // Real mode - delete via API
     try {
       const result = await TFSAAPI.deleteTransaction(transactionId);
       
@@ -498,4 +499,25 @@ export default function Dashboard() {
       <Footer />
     </div>
   )
+}
+
+// Create a Loading component
+function DashboardLoading() {
+  return (
+    <div className="min-h-screen flex items-center justify-center">
+      <div className="text-center">
+        <div className="w-16 h-16 border-t-4 border-blue-500 border-solid rounded-full animate-spin mx-auto mb-4"></div>
+        <p className="text-gray-400">Loading your TFSA data...</p>
+      </div>
+    </div>
+  );
+}
+
+// Export the main dashboard component with Suspense
+export default function Dashboard() {
+  return (
+    <Suspense fallback={<DashboardLoading />}>
+      <DashboardContent />
+    </Suspense>
+  );
 } 
