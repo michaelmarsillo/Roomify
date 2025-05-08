@@ -15,7 +15,7 @@ Track your tax-free savings.
 ## 🛠 Tech Stack
 
 - **MongoDB** – NoSQL database to store user and TFSA data
-- **Express.js** – API routes and business logic
+- **Express.js** – API routes and calculation logic
 - **Next.js** (React.js Framework) – Modern frontend with a fast dev environment
 - **Node.js** – Backend server
 - **Tailwind CSS** – Utility-first CSS for sleek, responsive UI
@@ -28,7 +28,7 @@ Track your tax-free savings.
 ### ✅ User Authentication
 - Register/login using **email**, **password**, and **year you turned 18**
 - JWT-based session handling
-- Passwords securely **hashed** before storage
+- Passwords securely **hashed** before storage in the database
 
 ### 📊 Dashboard Overview
 - **Total Contribution Room**
@@ -58,7 +58,6 @@ Styled with **responsive, Twitter-like cards** in a modern dark UI.
   - Soft borders
   - Subtle hover effects
   - Rounded buttons and inputs
-- Uses **modals** for transaction forms
 - Fully **responsive** for desktop and mobile
 
 ---
@@ -67,7 +66,7 @@ Styled with **responsive, Twitter-like cards** in a modern dark UI.
 
 If a user turned 18 in **2018**, the app adds up TFSA limits from **2018 to 2025**, and subtracts any deposits.
 
-Withdrawals are added back to room the **following calendar year** (manual simulation, not CRA-linked).
+Withdrawals are added back to total contribution room the **following calendar year** (manual simulation, not CRA-linked).
 
 ---
 
