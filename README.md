@@ -4,7 +4,7 @@ A sleek, full-stack TFSA tracking app built and shipped in under **24 hours**.
 
 Track your tax-free savings.
 
----
+![-----------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/rainbow.png)
 
 ## 🚀 Project Overview
 
