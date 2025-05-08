@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "TFSA Calculator",
+  title: "Roomify",
   description: "Track your TFSA contributions and withdrawals",
 };
 
