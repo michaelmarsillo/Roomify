@@ -1,0 +1,47 @@
+const express = require('express');
+const dotenv = require('dotenv');
+const cors = require('cors');
+const connectDB = require('./config/db');
+
+// Load environment variables
+dotenv.config();
+
+// Initialize express
+const app = express();
+
+// Connect to database
+connectDB();
+
+// Middleware
+app.use(express.json());
+app.use(cors());
+
+// Routes
+app.use('/api/auth', require('./routes/authRoutes'));
+app.use('/api/tfsa', require('./routes/tfsaRoutes'));
+
+// Simple test route
+app.get('/', (req, res) => {
+    res.send('TFSA Calculator API is running');
+});
+
+// Error handling middleware
+app.use((err, req, res, next) => {
+    console.error(err.stack);
+    res.status(500).json({
+        success: false,
+        message: 'Server Error',
+        error: process.env.NODE_ENV === 'production' ? 'Something went wrong' : err.message
+    });
+});
+
+// Start server
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+
+// Add graceful shutdown
+process.on('unhandledRejection', (err) => {
+    console.error(`Unhandled Rejection: ${err.message}`);
+    // Close server & exit process
+    server.close(() => process.exit(1));
+});
