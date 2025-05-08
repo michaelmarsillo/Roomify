@@ -52,7 +52,7 @@ Styled with **responsive, Twitter-like cards** in a modern dark UI.
 
 ## 💻 Frontend UX/UI
 
-- Built using **React + Vite**
+- Built using **Next.js**
 - Inspired by **Twitter’s dark theme**
 - Smooth interactions with:
   - Soft borders
@@ -73,9 +73,12 @@ Withdrawals are added back to room the **following calendar year** (manual simul
 
 ## 📂 Project Structure
 
+```bash
 TFSA-Calculator/
-├── frontend/   # React + Vite + Tailwind
-└── backend/    # Node + Express + MongoDB
+├── frontend/         # Next.js + Tailwind     
+├── backend/          # Node + Express + MongoDB (API & Logic)
+└── README.md         # Project readme
+```
 
 🚀 Fully functional in under **24 hours** 
 
