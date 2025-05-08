@@ -1,5 +1,5 @@
 // API base URL remember to readjust once hosted
-export const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+export const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://roomify-backend-w6i9.onrender.com';
 
 // Type definitions
 export interface User {
@@ -178,7 +178,7 @@ export const TFSAAPI = {
     return authFetch('/tfsa/transactions');
   },
   
-  // Debug endpoint for checking transaction issues
+
   async debugTransactions(): Promise<any> {
     return authFetch('/tfsa/debug/transactions');
   },
