@@ -84,4 +84,6 @@ TFSA-Calculator/
 ## 📬 Contact
 
 Built by [@michaelmarsillo](https://github.com/michaelmarsillo)  
+LinkedIn: [michaelmarsillo](https://www.linkedin.com/in/michaelmarsillo/)  
 DM for feedback, collaboration, or if you maxed out your TFSA 😅
+
