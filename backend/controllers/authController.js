@@ -41,7 +41,6 @@ const registerUser = async (req, res) => {
             console.log('Initial contribution room calculated:', room);
         } catch (roomError) {
             console.error('Error calculating initial contribution room:', roomError);
-            // Continue despite error - the room can be calculated later
         }
 
         // Create token
