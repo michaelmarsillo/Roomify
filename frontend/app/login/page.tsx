@@ -18,8 +18,6 @@ export default function Login() {
     setError('');
     setIsLoading(true);
     
-    // Debug: Log the API URL
-    console.log('API URL:', process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000');
     
     try {
       console.log('Attempting login with:', { email });

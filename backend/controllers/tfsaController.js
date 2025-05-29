@@ -244,23 +244,20 @@ const deleteTransaction = async (req, res) => {
             return res.status(404).json({ message: 'User not found' });
         }
         
-        // DEBUG - Log current user totals
         console.log('Before deletion - User totals:', {
             totalDeposits: user.totalDeposits,
             totalWithdrawals: user.totalWithdrawals,
             fixedContributionRoom: user.fixedContributionRoom
         });
         
-        // Update user totals based on transaction type - must match exact string value
+        // Update user totals based on transaction type
         if (transaction.type && transaction.type.toString() === 'deposit') {
             console.log('Reducing deposits by', transaction.amount);
             user.totalDeposits -= transaction.amount;
-            // Ensure we don't have negative deposits
             if (user.totalDeposits < 0) user.totalDeposits = 0;
         } else if (transaction.type && transaction.type.toString() === 'withdrawal') {
             console.log('Reducing withdrawals by', transaction.amount);
             user.totalWithdrawals -= transaction.amount;
-            // Ensure we don't have negative withdrawals
             if (user.totalWithdrawals < 0) user.totalWithdrawals = 0;
         } else {
             console.log('Unknown transaction type:', transaction.type);
@@ -269,7 +266,6 @@ const deleteTransaction = async (req, res) => {
         // Save the updated user
         await user.save();
         
-        // DEBUG - Log updated user totals
         console.log('After deletion - User totals:', {
             totalDeposits: user.totalDeposits,
             totalWithdrawals: user.totalWithdrawals,

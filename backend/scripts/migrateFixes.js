@@ -1,10 +1,10 @@
-// Migration script to set fixedContributionRoom for existing users
+
 require('dotenv').config();
 const mongoose = require('mongoose');
 const User = require('../models/User');
 const TFSA = require('../models/TFSA');
 
-// TFSA annual limits from 2009 to present (copy from tfsaController.js)
+// TFSA annual limits from 2009 to present
 const TFSA_LIMITS = {
   2009: 5000,
   2010: 5000,
