@@ -21,7 +21,7 @@ const corsOptions = {
     'https://tfsa-calculator.vercel.app',
     'https://roomify-git-main-thecalinn.vercel.app',
     'https://roomify-thecalinn.vercel.app',
-    'https://roomify-m.vercel.app' // Your actual Vercel app URL
+    'https://roomify-m.vercel.app' 
   ],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
