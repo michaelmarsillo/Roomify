@@ -23,6 +23,24 @@ const TFSA_LIMITS = {
     2025: 7000
 };
 
+// Helper function to calculate withdrawals from previous years
+// According to TFSA rules, withdrawals only get added back to contribution room
+// on January 1st of the following year
+const calculatePreviousYearWithdrawals = async (userId) => {
+    const currentYear = new Date().getFullYear();
+    const transactions = await Transaction.find({ 
+        user: userId,
+        type: 'withdrawal'
+    });
+    
+    // Only sum withdrawals from years before the current year
+    const previousYearWithdrawals = transactions
+        .filter(t => new Date(t.date).getFullYear() < currentYear)
+        .reduce((sum, t) => sum + t.amount, 0);
+    
+    return previousYearWithdrawals;
+};
+
 // Calculate initial contribution room
 const calculateInitialContributionRoom = async (userId, yearTurned18) => {
     const currentYear = new Date().getFullYear();
@@ -103,11 +121,8 @@ const calculateContributionRoom = async (req, res) => {
 // Update transactions
 const updateTransactions = async (req, res) => {
     try {
-        const { type, amount, description } = req.body;
+        const { type, amount, description, date } = req.body;
         const userId = req.user._id;
-        
-        // Log incoming transaction data for debugging
-        console.log('Creating transaction:', { type, amount, description });
         
         // Validate transaction type
         if (type !== 'deposit' && type !== 'withdrawal') {
@@ -122,19 +137,20 @@ const updateTransactions = async (req, res) => {
             return res.status(400).json({ message: 'Transaction amount must be greater than 0' });
         }
 
-        // Create transaction
-        const transaction = await Transaction.create({
+        // Create transaction with optional custom date
+        const transactionData = {
             user: userId,
             type,
             amount,
             description
-        });
+        };
         
-        console.log('Transaction created:', {
-            id: transaction._id,
-            type: transaction.type,
-            amount: transaction.amount
-        });
+        // If a custom date is provided, use it; otherwise use default (Date.now)
+        if (date) {
+            transactionData.date = new Date(date);
+        }
+        
+        const transaction = await Transaction.create(transactionData);
 
         // Update user totals
         const user = await User.findById(userId);
@@ -142,32 +158,18 @@ const updateTransactions = async (req, res) => {
             return res.status(404).json({ message: 'User not found' });
         }
         
-        // Log before update
-        console.log('Before update - User totals:', {
-            totalDeposits: user.totalDeposits || 0,
-            totalWithdrawals: user.totalWithdrawals || 0
-        });
-        
         // Update deposit or withdrawal totals
         if (type === 'deposit') {
             // Initialize if undefined
             if (typeof user.totalDeposits !== 'number') user.totalDeposits = 0;
             user.totalDeposits += amount;
-            console.log(`Added deposit of ${amount}, new total: ${user.totalDeposits}`);
         } else {
             // Initialize if undefined
             if (typeof user.totalWithdrawals !== 'number') user.totalWithdrawals = 0;
             user.totalWithdrawals += amount;
-            console.log(`Added withdrawal of ${amount}, new total: ${user.totalWithdrawals}`);
         }
         
         await user.save();
-        
-        // Log after update
-        console.log('After update - User totals:', {
-            totalDeposits: user.totalDeposits,
-            totalWithdrawals: user.totalWithdrawals
-        });
         
         // Get the FIXED contribution room from the user model - this NEVER changes
         const totalContributionRoom = user.fixedContributionRoom; 
@@ -189,8 +191,9 @@ const updateTransactions = async (req, res) => {
         }
         
         // Calculate remaining room after this transaction
-        // THIS is what changes with deposits and withdrawals
-        const remainingRoom = user.fixedContributionRoom - user.totalDeposits + user.totalWithdrawals;
+        // Only withdrawals from previous years count toward available room
+        const previousYearWithdrawals = await calculatePreviousYearWithdrawals(userId);
+        const remainingRoom = user.fixedContributionRoom - user.totalDeposits + previousYearWithdrawals;
         
         // Return the transaction with updated room information
         res.status(201).json({
@@ -230,54 +233,31 @@ const deleteTransaction = async (req, res) => {
             return res.status(403).json({ message: 'Not authorized to delete this transaction' });
         }
         
-        // Log the transaction for debugging
-        console.log('Transaction to delete:', {
-            id: transaction._id,
-            type: transaction.type,
-            amount: transaction.amount,
-            user: transaction.user
-        });
-        
         // Get the user
         const user = await User.findById(userId);
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
         }
         
-        console.log('Before deletion - User totals:', {
-            totalDeposits: user.totalDeposits,
-            totalWithdrawals: user.totalWithdrawals,
-            fixedContributionRoom: user.fixedContributionRoom
-        });
-        
         // Update user totals based on transaction type
         if (transaction.type && transaction.type.toString() === 'deposit') {
-            console.log('Reducing deposits by', transaction.amount);
             user.totalDeposits -= transaction.amount;
             if (user.totalDeposits < 0) user.totalDeposits = 0;
         } else if (transaction.type && transaction.type.toString() === 'withdrawal') {
-            console.log('Reducing withdrawals by', transaction.amount);
             user.totalWithdrawals -= transaction.amount;
             if (user.totalWithdrawals < 0) user.totalWithdrawals = 0;
-        } else {
-            console.log('Unknown transaction type:', transaction.type);
         }
         
         // Save the updated user
         await user.save();
         
-        console.log('After deletion - User totals:', {
-            totalDeposits: user.totalDeposits,
-            totalWithdrawals: user.totalWithdrawals,
-            fixedContributionRoom: user.fixedContributionRoom
-        });
-        
         // Delete the transaction
         await Transaction.findByIdAndDelete(transactionId);
         
         // Calculate the remaining room after deletion
-        // Note: The fixed contribution room NEVER changes
-        const remainingRoom = user.fixedContributionRoom - user.totalDeposits + user.totalWithdrawals;
+        // Only withdrawals from previous years count toward available room
+        const previousYearWithdrawals = await calculatePreviousYearWithdrawals(userId);
+        const remainingRoom = user.fixedContributionRoom - user.totalDeposits + previousYearWithdrawals;
         
         res.json({
             success: true,
@@ -304,5 +284,6 @@ module.exports = {
     calculateContributionRoom,
     updateTransactions,
     deleteTransaction,
+    calculatePreviousYearWithdrawals,
     TFSA_LIMITS
 };

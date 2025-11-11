@@ -151,12 +151,13 @@ export const TFSAAPI = {
     return authFetch('/tfsa');
   },
   
-  async addTransaction(type: 'Deposit' | 'Withdrawal', amount: number): Promise<Transaction> {
+  async addTransaction(type: 'Deposit' | 'Withdrawal', amount: number, date?: string): Promise<Transaction> {
     return authFetch('/tfsa/transactions', {
       method: 'POST',
       body: JSON.stringify({ 
         type: type.toLowerCase(), // Backend expects lowercase
-        amount 
+        amount,
+        date 
       }),
     });
   },

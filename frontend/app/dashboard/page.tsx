@@ -54,6 +54,7 @@ function DashboardContent() {
   const [isAddTransactionOpen, setIsAddTransactionOpen] = useState(false);
   const [transactionType, setTransactionType] = useState<'Deposit' | 'Withdrawal'>('Deposit');
   const [amount, setAmount] = useState<string>('');
+  const [transactionDate, setTransactionDate] = useState<string>(new Date().toISOString().split('T')[0]);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [isDemoMode, setIsDemoMode] = useState<boolean>(false);
   
@@ -135,7 +136,7 @@ function DashboardContent() {
           id: `demo-${Date.now()}`,
           type: transactionType,
           amount: newAmount,
-          date: new Date().toISOString(),
+          date: new Date(transactionDate).toISOString(),
           userId: 'demo-user'
         };
         
@@ -167,7 +168,7 @@ function DashboardContent() {
       }
       
       // Real mode - add transaction via API
-      await TFSAAPI.addTransaction(transactionType, Number(amount));
+      await TFSAAPI.addTransaction(transactionType, Number(amount), transactionDate);
       
       // Refresh TFSA data
       const updatedTfsaData = await TFSAAPI.getData();
@@ -176,6 +177,7 @@ function DashboardContent() {
       // Close modal and reset form
       setIsAddTransactionOpen(false);
       setAmount('');
+      setTransactionDate(new Date().toISOString().split('T')[0]);
     } catch (err) {
       console.error('Error adding transaction:', err);
       alert('Failed to add transaction. Please try again.');
@@ -331,7 +333,7 @@ function DashboardContent() {
             <p className="text-white text-2xl font-bold">
               {tfsaData ? formatCurrency(tfsaData.totalWithdrawals) : '-'}
             </p>
-            <p className="text-xs text-gray-500 mt-1">Increases remaining room</p>
+            <p className="text-xs text-gray-500 mt-1">Added back Jan 1st next year</p>
           </div>
           
           <div className="bg-blue-400/30 rounded-xl p-6 border border-blue-800/40">
@@ -386,7 +388,7 @@ function DashboardContent() {
                         {formatCurrency(transaction.amount)}
                       </td>
                       <td className="px-6 py-4">
-                        {new Date(transaction.date).toLocaleDateString('en-CA')}
+                        {transaction.date.split('T')[0]}
                       </td>
                       <td className="px-6 py-4 text-right">
                         <button
@@ -483,6 +485,23 @@ function DashboardContent() {
                     placeholder="0.00"
                   />
                 </div>
+              </div>
+              
+              <div>
+                <label htmlFor="transactionDate" className="block text-sm font-medium text-gray-400 mb-1">
+                  Transaction Date
+                </label>
+                <input
+                  id="transactionDate"
+                  type="date"
+                  value={transactionDate}
+                  onChange={(e) => setTransactionDate(e.target.value)}
+                  required
+                  disabled={isSubmitting}
+                  max={new Date().toISOString().split('T')[0]}
+                  className="w-full rounded-lg border border-gray-700 bg-black/30 px-4 py-3 text-white focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                />
+                <p className="text-xs text-gray-500 mt-1">Year matters for withdrawal calculations</p>
               </div>
               
               <button

@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const authenticateUser = require('../middleware/authenticateUser');
-const { calculateInitialContributionRoom, calculateContributionRoom, updateTransactions, deleteTransaction } = require('../controllers/tfsaController');
+const { calculateInitialContributionRoom, calculateContributionRoom, updateTransactions, deleteTransaction, calculatePreviousYearWithdrawals } = require('../controllers/tfsaController');
 const Transaction = require('../models/Transaction');
 const User = require('../models/User');
 const TFSA = require('../models/TFSA');
@@ -98,7 +98,9 @@ router.get('/', authenticateUser, async (req, res) => {
     }
     
     // Calculate the VARIABLE remaining room
-    const remainingRoom = totalContributionRoom - totalDeposits + totalWithdrawals;
+    // Only withdrawals from previous years count toward available room
+    const previousYearWithdrawals = await calculatePreviousYearWithdrawals(userId);
+    const remainingRoom = totalContributionRoom - totalDeposits + previousYearWithdrawals;
     
     // Log the values for debugging
     console.log('TFSA Data:', {
@@ -106,6 +108,7 @@ router.get('/', authenticateUser, async (req, res) => {
       fixedContributionRoom: totalContributionRoom,
       totalDeposits,
       totalWithdrawals,
+      previousYearWithdrawals,
       remainingRoom
     });
     
@@ -184,8 +187,9 @@ router.post('/fix-room', authenticateUser, async (req, res) => {
     // Save updated user
     await user.save();
     
-    // Calculate remaining room
-    const remainingRoom = fixedContributionRoom - totalDeposits + totalWithdrawals;
+    // Calculate remaining room - only withdrawals from previous years count
+    const previousYearWithdrawals = await calculatePreviousYearWithdrawals(userId);
+    const remainingRoom = fixedContributionRoom - totalDeposits + previousYearWithdrawals;
     
     return res.json({
       success: true,
