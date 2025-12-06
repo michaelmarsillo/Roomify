@@ -45,7 +45,7 @@ Styled with **responsive, Twitter-like cards** in a modern dark UI.
 ### 🧠 TFSA Logic Engine
 - Uses a static lookup table for TFSA limits (from 2009 onward)
 - Calculates contribution room based on user's **age/year turned 18**
-- Handles CRA-like rules (no sync, simplified)
+- Handles CRA-like rules
 
 
 ## 🧮 Example Logic
@@ -60,6 +60,7 @@ Withdrawals are added back to total contribution room the **following calendar y
 
 ## 📬 Contact
 
-*Made by [michael marsillo](https://www.linkedin.com/in/michaelmarsillo/)* 
+*Made by [michael marsillo](https://www.linkedin.com/in/michaelmarsillo/)*
+
 DM for feedback, collaboration, or if you maxed out your TFSA 😅
 
