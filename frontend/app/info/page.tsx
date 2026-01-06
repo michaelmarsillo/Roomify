@@ -20,6 +20,7 @@ const tfsaLimits = [
   { year: 2023, amount: 6500 },
   { year: 2024, amount: 7000 },
   { year: 2025, amount: 7000 },
+  { year: 2026, amount: 7000 },
 ];
 
 export default function TFSAInfo() {

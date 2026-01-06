@@ -7,7 +7,7 @@ export default function Footer() {
         <a href="https://github.com/michaelmarsillo" target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline ml-1 mr-1">
           Michael Marsillo
         </a> 
-         &copy; 2025 all rights reserved.
+         &copy; {new Date().getFullYear()} all rights reserved.
       </p>
     </footer>
   );

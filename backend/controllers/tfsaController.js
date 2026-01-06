@@ -20,7 +20,8 @@ const TFSA_LIMITS = {
     2022: 6000,
     2023: 6500,
     2024: 7000,
-    2025: 7000
+    2025: 7000,
+    2026: 7000
 };
 
 // Helper function to calculate withdrawals from previous years
