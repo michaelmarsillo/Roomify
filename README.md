@@ -4,8 +4,6 @@ A sleek, full-stack TFSA tracking app built and shipped in under **24 hours**.
 
 Track your tax-free savings.
 
-![-----------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/rainbow.png)
-
 ## 🚀 Project Overview
 
 **Roomify** is a MERN-stack web application that allows Canadian users to create an account, calculate their total TFSA contribution room, and manage their deposits and withdrawals. Built for simplicity, security, and speed, this app gives users full control over their TFSA tracking  all in a modern, dark-themed interface.
